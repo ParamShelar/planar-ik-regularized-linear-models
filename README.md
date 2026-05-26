@@ -2,6 +2,8 @@
 
 ![Predicted vs true arm poses](reports/figures/predicted_vs_true_arm_pose.png)
 
+![Trajectory comparison animation](reports/figures/trajectory.gif)
+
 Learn inverse kinematics for a 2-DOF planar robot arm using linear models, polynomial feature lifting, and L2 regularization. The project is intentionally small but engineering-shaped: the arm has a closed-form analytic inverse kinematics solution, so every prediction can be checked against ground-truth geometry and reported as end-effector error in millimeters.
 
 ## Project Arc
