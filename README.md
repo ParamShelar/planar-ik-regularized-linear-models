@@ -114,9 +114,6 @@ Other extensions:
 - Compare closed-form ridge against gradient-based optimization
 - Export a short portfolio animation for the best baseline and ridge models
 
-## Resume Bullet Target
-
-Built a controlled study of regularized linear models on 2-DOF inverse kinematics; reduced mean end-effector error from 127 mm to 19 mm via L2 regularization on polynomial features and identified the nonlinear approximation gap motivating MLP-based approaches.
 
 ## License
 
