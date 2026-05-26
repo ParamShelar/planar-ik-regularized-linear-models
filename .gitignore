@@ -51,6 +51,7 @@ data/processed/**
 *.mov
 *.avi
 *.gif
+!reports/figures/trajectory.gif
 
 # OS and editor files
 .DS_Store

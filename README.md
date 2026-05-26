@@ -1,8 +1,8 @@
 # Planar IK with Regularized Linear Models
 
-Learn inverse kinematics for a 2-DOF planar robot arm using linear models, polynomial feature lifting, and L2 regularization. The project is intentionally small but engineering-shaped: the arm has a closed-form analytic inverse kinematics solution, so every prediction can be checked against ground-truth geometry and reported as end-effector error in millimeters.
+![Predicted vs true arm poses](reports/figures/predicted_vs_true_arm_pose.png)
 
-> Status: scaffolded. The repository currently contains the package, script, notebook, test, data, artifact, and report structure for the study. Implementation files are placeholders and the workflow below is the intended build target.
+Learn inverse kinematics for a 2-DOF planar robot arm using linear models, polynomial feature lifting, and L2 regularization. The project is intentionally small but engineering-shaped: the arm has a closed-form analytic inverse kinematics solution, so every prediction can be checked against ground-truth geometry and reported as end-effector error in millimeters.
 
 ## Project Arc
 
@@ -58,7 +58,7 @@ python -m pip install -e ".[dev]"
 Run the study:
 
 ```powershell
-python scripts/run_experiment.py --config configs/default.yaml
+python scripts/run_experiment.py --config configs/default.yaml --parity-check
 python scripts/make_plots.py --run artifacts/latest
 python scripts/animate_trajectory.py --run artifacts/latest
 pytest
@@ -66,15 +66,29 @@ pytest
 
 The expected outputs are validation curves, ridge coefficient paths, conditioning plots, workspace error heatmaps, and an animation comparing the learned arm pose against the analytic solution on a target trajectory.
 
+## Results
+
+Default run: `seeds = [42, 0, 1, 2, 3]`, errors are mean +/- std end-effector error in millimeters.
+
+| Model | Train | Val | Test |
+| --- | ---: | ---: | ---: |
+| Linear baseline | 126.7 +/- 0.9 | 126.4 +/- 1.3 | 127.3 +/- 2.0 |
+| Best unregularized polynomial, degree 25 | 20.3 +/- 0.4 | 21.4 +/- 0.9 | 20.9 +/- 1.4 |
+| Ridge at fixed degree 35, lambda 1.61e+00 | 22.2 +/- 0.6 | 23.1 +/- 1.4 | 22.6 +/- 1.5 |
+| Ridge joint grid optimum, per-seed selection (seed 42: degree 29, lambda 3.16e-4) | 18.7 +/- 0.4 | 19.3 +/- 0.8 | 19.2 +/- 1.2 |
+
+For the notebook anchor seed (`seed=42`), the joint grid selects degree 29 with lambda `3.16e-4`, giving 18.94 mm validation and 18.46 mm test error. The single aggregate heatmap cell with the lowest mean validation error is degree 25 with lambda `1.78e-5`, at 20.24 mm validation and 19.59 mm test.
+
 ## Experiments
 
-Recommended first sweep:
+The default study runs:
 
 - Raw linear regression on `(x, y)`
-- Polynomial degrees `2` through `8`
-- Ridge penalties across log-spaced `lambda` values
+- Unregularized polynomial degrees `1` through `43`
+- Ridge penalties across log-spaced `lambda` values at degree `35`
+- A joint degree/lambda grid over degrees `15` through `45`
 - Multiple random seeds for train/validation/test splits
-- Optional PyTorch parity check against the from-scratch closed-form implementation
+- Optional PyTorch parity check against the from-scratch closed-form implementation via `--parity-check`
 
 The final report should emphasize how plain linear regression fails, why high-degree polynomial regression overfits without regularization, and how ridge stabilizes the model by shrinking coefficients and improving matrix conditioning.
 
@@ -89,7 +103,7 @@ The final report should emphasize how plain linear regression fails, why high-de
 
 ## Limitations and Next Steps
 
-Polynomial ridge regression is still a global linear model in a hand-built feature space. It can reduce error, but at fixed degree it should leave a measurable approximation gap. The next version of this project should replace polynomial lifting with an MLP and compare whether learned nonlinear features reduce the end-effector error floor.
+Polynomial ridge regression is still a global linear model in a hand-built feature space. It reduces mean end-effector error to about 19 mm under per-seed grid selection, but the residuals are structured near the workspace boundary and singular configurations. The next version of this project should replace polynomial lifting with an MLP and compare whether learned nonlinear features reduce that error floor.
 
 Other extensions:
 
@@ -100,7 +114,7 @@ Other extensions:
 
 ## Resume Bullet Target
 
-Built a controlled study of regularized linear models on 2-DOF inverse kinematics; reduced end-effector error from `X` mm to `Y` mm via L2 regularization on polynomial features and identified the nonlinear approximation gap motivating MLP-based approaches.
+Built a controlled study of regularized linear models on 2-DOF inverse kinematics; reduced mean end-effector error from 127 mm to 19 mm via L2 regularization on polynomial features and identified the nonlinear approximation gap motivating MLP-based approaches.
 
 ## License
 

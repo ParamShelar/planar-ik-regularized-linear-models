@@ -1,0 +1,29 @@
+L1: 100.0
+L2: 100.0
+N: 10000
+seeds: [42, 0, 1, 2, 3]
+ratios: [0.70, 0.15, 0.15]
+
+degrees:
+  start: 1
+  stop: 43
+  step: 1
+
+lambdas:
+  logspace:
+    start: -6
+    stop: 4
+    num: 30
+
+ridge_fixed_degree: 35
+
+grid_degrees:
+  start: 15
+  stop: 45
+  step: 1
+
+grid_lambdas:
+  logspace:
+    start: -6
+    stop: 4
+    num: 25
